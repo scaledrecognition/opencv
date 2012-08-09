@@ -316,7 +316,7 @@ void FaceRecognizer::save(const string& filename) const {
 void FaceRecognizer::load(const string& filename) {
     FileStorage fs(filename, FileStorage::READ);
     if (!fs.isOpened())
-        CV_Error(CV_StsError, "File can't be opened for writing!");
+        CV_Error(CV_StsError, "File can't be opened for reading!");
     this->load(fs);
     fs.release();
 }
