@@ -35,6 +35,7 @@
 import os
 import sys
 import cv2
+import random
 import numpy as np
 
 def normalize(X, low, high, dtype=None):
@@ -117,9 +118,11 @@ if __name__ == "__main__":
     #
     # model.predict is going to return the predicted label and
     # the associated confidence:
-    [p_label, p_confidence] = model.predict(np.asarray(X[0]))
+    test_sample = random.randint(0,len(X)-1)
+    test_label = y[test_sample]
+    [p_label, p_confidence] = model.predict(np.asarray(X[test_sample]))
     # Print it:
-    print "Predicted label = %d (confidence=%.2f)" % (p_label, p_confidence)
+    print "Predicted label = %d (confidence=%.2f).  Should be %d." % (p_label, p_confidence, test_label)
     # Cool! Finally we'll plot the Eigenfaces, because that's 
     # what most people read in the papers are keen to see.
     #
