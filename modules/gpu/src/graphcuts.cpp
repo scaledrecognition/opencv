@@ -48,7 +48,7 @@ void cv::gpu::graphcut(GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, Gpu
 void cv::gpu::graphcut(GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, GpuMat&, Stream&) { throw_nogpu(); }
 
 void cv::gpu::connectivityMask(const GpuMat&, GpuMat&, const cv::Scalar&, const cv::Scalar&, Stream&) { throw_nogpu(); }
-void cv::gpu::labelComponents(const GpuMat& mask, GpuMat& components, Stream& stream) { throw_nogpu(); }
+void cv::gpu::labelComponents(const GpuMat& mask, GpuMat& components, int, Stream& stream) { throw_nogpu(); }
 
 #else /* !defined (HAVE_CUDA) */
 
@@ -56,7 +56,7 @@ namespace cv { namespace gpu { namespace device
 {
     namespace ccl
     {
-        void labelComponents(const DevMem2D& edges, DevMem2Di comps, cudaStream_t stream);
+        void labelComponents(const DevMem2D& edges, DevMem2Di comps, int flags, cudaStream_t stream);
 
         template<typename T>
         void computeEdges(const DevMem2D& image, DevMem2D edges, const float4& lo, const float4& hi, cudaStream_t stream);
@@ -106,15 +106,17 @@ void cv::gpu::connectivityMask(const GpuMat& image, GpuMat& mask, const cv::Scal
     f(image, mask, culo, cuhi, stream);
 }
 
-void cv::gpu::labelComponents(const GpuMat& mask, GpuMat& components, Stream& s)
+void cv::gpu::labelComponents(const GpuMat& mask, GpuMat& components, int flags, Stream& s)
 {
+    if (!TargetArchs::builtWith(SHARED_ATOMICS) || !DeviceInfo().supports(SHARED_ATOMICS))
+        CV_Error(CV_StsNotImplemented, "The device doesn't support shared atomics and communicative synchronization!");
     CV_Assert(!mask.empty() && mask.type() == CV_8U);
 
     if (mask.size() != components.size() || components.type() != CV_32SC1)
         components.create(mask.size(), CV_32SC1);
 
     cudaStream_t stream = StreamAccessor::getStream(s);
-    device::ccl::labelComponents(mask, components, stream);
+    device::ccl::labelComponents(mask, components, flags, stream);
 }
 
 namespace
