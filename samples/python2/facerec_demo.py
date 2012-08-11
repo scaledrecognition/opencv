@@ -118,11 +118,12 @@ if __name__ == "__main__":
     #
     # model.predict is going to return the predicted label and
     # the associated confidence:
-    test_sample = random.randint(0,len(X)-1)
-    test_label = y[test_sample]
-    [p_label, p_confidence] = model.predict(np.asarray(X[test_sample]))
-    # Print it:
-    print "Predicted label = %d (confidence=%.2f).  Should be %d." % (p_label, p_confidence, test_label)
+
+    for i in xrange(len(X)):
+        [p_label, p_confidence] = model.predict(np.asarray(X[i]))
+        # Print it:
+        print "Predicted label = %d (%d) (confidence=%.2f)" % (p_label, y[i], p_confidence)
+
     # Cool! Finally we'll plot the Eigenfaces, because that's 
     # what most people read in the papers are keen to see.
     #
