@@ -85,6 +85,7 @@ def read_images(path, sz=None):
                     print "Unexpected error:", sys.exc_info()[0]
                     raise
             c = c+1
+    y = np.asarray(y, dtype=np.int32)
     return [X,y]
    
 if __name__ == "__main__":
